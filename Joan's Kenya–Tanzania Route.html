@@ -1,0 +1,491 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Joan's Kenya–Tanzania Route</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a field-map page. Big interactive route map up top, a day ledger beside/below it, then reference sections (transport, groups, budget, safety). */
+:root{
+  --bg:#f3f4f0; --panel:#ffffff; --ink:#1d2421; --muted:#5d6762; --line:#d9ddd6;
+  --sea:#cfe2e6; --land:#ece5d3; --land-edge:#c9bea3; --lake:#a9cdd6; --park:#dfe5c6;
+  --road:#3b3a35; --safari:#b8741a; --flight:#2d6fa8; --boat:#13827a; --trip:#7a6f9b; --alt:#9a4b3c;
+  --accent:#13827a; --chip:#e7ece6; --warn:#a2541b; --warn-bg:#fbefe2; --ok:#2f7a4a;
+  --f-display:"Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", Roboto, Arial, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe7; --muted:#9aa6a0; --line:#2f3834;
+  --sea:#17303a; --land:#2a2a22; --land-edge:#4b4636; --lake:#24505c; --park:#2f3a25;
+  --road:#d8d3c4; --safari:#e3a24a; --flight:#6aa8e0; --boat:#3cc0b2; --trip:#ab9fd4; --alt:#e08a76;
+  --accent:#3cc0b2; --chip:#26302c; --warn:#f0a868; --warn-bg:#33261a; --ok:#6cc48c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2220; --ink:#e7ebe7; --muted:#9aa6a0; --line:#2f3834;
+  --sea:#17303a; --land:#2a2a22; --land-edge:#4b4636; --lake:#24505c; --park:#2f3a25;
+  --road:#d8d3c4; --safari:#e3a24a; --flight:#6aa8e0; --boat:#3cc0b2; --trip:#ab9fd4; --alt:#e08a76;
+  --accent:#3cc0b2; --chip:#26302c; --warn:#f0a868; --warn-bg:#33261a; --ok:#6cc48c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:28px 64px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(28px,4.4vw,44px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:24px;font-weight:600;margin-bottom:12px}
+h3{font-size:17px;font-weight:600}
+p{margin:0}
+a{color:var(--accent)}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{max-width:70ch;color:var(--muted);font-size:16px;margin-top:10px}
+header{display:grid;gap:6px;margin-bottom:20px}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.fact{font-family:var(--f-mono);font-size:12.5px;background:var(--chip);border-radius:4px;padding:4px 9px}
+.fact b{font-weight:500;color:var(--ink)}
+
+/* map + ledger */
+.mapzone{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.mapzone{grid-template-columns:1fr}}
+.mapcard{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;position:sticky;top:calc(env(safe-area-inset-top,0px) + 10px)}
+@media (max-width:900px){.mapcard{position:static}}
+.maptools{display:flex;flex-wrap:wrap;gap:6px;padding:10px;border-bottom:1px solid var(--line);align-items:center}
+.btn{font:500 13px var(--f-body);border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:5px;padding:5px 10px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.btn.play{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn:focus-visible,.day:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.spacer{flex:1}
+svg#map{display:block;width:100%;height:auto;aspect-ratio:1/1;max-width:100%;touch-action:manipulation}
+#map text{font-family:var(--f-body);fill:var(--ink)}
+#map .lbl{font-size:11px;paint-order:stroke;stroke:var(--land);stroke-width:3px;stroke-linejoin:round}
+#map .lbl.sea{stroke:var(--sea)}
+#map .country{font-family:var(--f-mono);font-size:12px;letter-spacing:.3em;fill:var(--muted);stroke:none}
+#map .ocean{font-style:italic;fill:var(--muted);font-size:12px}
+#map .stop{cursor:pointer}
+#map .stop circle.dot{stroke:var(--panel);stroke-width:2}
+#map .stop.on circle.dot{stroke:var(--ink);stroke-width:2.5}
+#map .leg{fill:none;stroke-linecap:round;stroke-linejoin:round}
+#map .leg.dim{opacity:.18}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:22px;height:0;border-top:3px solid}
+.info{padding:12px 14px;border-top:1px solid var(--line);min-height:84px}
+.info h3{margin-bottom:4px}
+.info p{color:var(--muted);font-size:14px}
+.daycount{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+
+.ledger{display:grid;gap:8px}
+.phase{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:10px;display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.day{display:grid;grid-template-columns:62px minmax(0,1fr);gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
+.day:hover{border-color:var(--accent)}
+.day.on{border-color:var(--ink);box-shadow:inset 3px 0 0 var(--ink)}
+.date{font-family:var(--f-mono);font-size:12px;line-height:1.3;color:var(--muted)}
+.date b{display:block;font-size:18px;color:var(--ink);font-weight:500}
+.day h3{font-size:15.5px}
+.day p{font-size:13.5px;color:var(--muted);margin-top:3px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.tag{font-family:var(--f-mono);font-size:11px;border-radius:3px;padding:1px 6px;border:1px solid currentColor}
+.t-safari{color:var(--safari)}.t-road{color:var(--road)}.t-flight{color:var(--flight)}.t-boat{color:var(--boat)}.t-trip{color:var(--trip)}.t-night{color:var(--muted)}.t-alt{color:var(--alt)}
+
+section{margin-top:48px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:14px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;min-width:0}
+.box h3{margin-bottom:6px}
+.box p,.box li{font-size:14px}
+.box ul{margin:6px 0 0;padding-left:18px}
+.box li+li{margin-top:4px}
+.note{background:var(--warn-bg);border-left:3px solid var(--warn);padding:10px 14px;border-radius:0 6px 6px 0;font-size:14px;max-width:85ch}
+.note+.note{margin-top:8px}
+.muted{color:var(--muted)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:620px}
+th,td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+td.num,th.num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.total td{font-weight:600;border-bottom:none;background:var(--chip)}
+tr.sub td{color:var(--muted)}
+.opt{display:grid;gap:4px}
+.badge{display:inline-block;font-family:var(--f-mono);font-size:11px;padding:1px 7px;border-radius:3px;background:var(--chip);color:var(--ink);margin-right:4px}
+.badge.rec{background:var(--accent);color:#fff}
+.check{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.check li{display:grid;grid-template-columns:20px 1fr;gap:6px;font-size:14px}
+.check li::before{content:"";width:12px;height:12px;border:1.5px solid var(--muted);border-radius:2px;margin-top:4px}
+.tot{display:flex;flex-wrap:wrap;gap:12px;margin:10px 0 14px}
+.tot div{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 14px;min-width:150px}
+.tot b{display:block;font-family:var(--f-mono);font-size:22px;font-weight:500;font-variant-numeric:tabular-nums}
+.tot span{font-size:12.5px;color:var(--muted)}
+footer{margin-top:48px;font-size:13px;color:var(--muted);max-width:85ch}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Solo route · 15 Nov – 5 Dec 2026 · 21 days</span>
+  <h1>Nairobi → Amboseli → Arusha → Zanzibar</h1>
+  <p class="lede">A three-week plan for Joan: a long first week in Nairobi, a short Amboseli safari, the Namanga crossing into Tanzania, a week around Arusha, Ngorongoro and Kilimanjaro, then seven nights on Zanzibar. Safari is capped at 5 days in two places (Amboseli and Ngorongoro, with Lake Manyara as the lake). Tap any day or point on the map.</p>
+  <div class="facts">
+    <span class="fact"><b>6</b> nights Nairobi</span>
+    <span class="fact"><b>5</b> safari days</span>
+    <span class="fact"><b>6</b> nights N. Tanzania</span>
+    <span class="fact"><b>7</b> nights Zanzibar</span>
+    <span class="fact">CPH → NBO · ZNZ → CPH</span>
+  </div>
+</header>
+
+<div class="mapzone">
+  <div class="mapcard">
+    <div class="maptools" role="toolbar" aria-label="Map view">
+      <button class="btn" data-view="all" aria-pressed="true">Whole trip</button>
+      <button class="btn" data-view="nbo" aria-pressed="false">Nairobi area</button>
+      <button class="btn" data-view="ntz" aria-pressed="false">Northern Tanzania</button>
+      <button class="btn" data-view="znz" aria-pressed="false">Zanzibar</button>
+      <span class="spacer"></span>
+      <button class="btn play" id="play">▶ Play journey</button>
+    </div>
+    <svg id="map" viewBox="0 0 600 600" role="img" aria-label="Route map of Kenya, northern Tanzania and Zanzibar"></svg>
+    <div class="info" id="info" aria-live="polite">
+      <span class="daycount" id="infoDay">Start</span>
+      <h3 id="infoTitle">Copenhagen → Nairobi</h3>
+      <p id="infoText">Fly in to Jomo Kenyatta International (NBO), end with a flight home from Zanzibar (ZNZ). Press Play to watch the route unfold.</p>
+    </div>
+    <div class="legend">
+      <span><i style="border-color:var(--flight);border-top-style:dashed"></i>Flight</span>
+      <span><i style="border-color:var(--road)"></i>Road / shuttle</span>
+      <span><i style="border-color:var(--safari)"></i>Safari drive</span>
+      <span><i style="border-color:var(--trip);border-top-style:dotted"></i>Day trip</span>
+      <span><i style="border-color:var(--boat)"></i>Boat / dhow</span>
+      <span><i style="border-color:var(--alt);border-top-style:dashed"></i>Plan B via Nairobi</span>
+    </div>
+  </div>
+
+  <div class="ledger" id="ledger"></div>
+</div>
+
+<section id="transport">
+  <h2>Getting between places</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Leg</th><th>How</th><th>Time</th><th class="num">Approx. cost (pp)</th><th>Book / notes</th></tr></thead>
+    <tbody>
+      <tr><td>Copenhagen → Nairobi (NBO)</td><td>Flight, 1 stop (Doha, Istanbul, Dubai, Amsterdam, Addis)</td><td>12–16 h</td><td class="num">open-jaw total $650–1,200</td><td>Book as one open-jaw ticket CPH→NBO / ZNZ→CPH. Usually cheaper than two one-ways.</td></tr>
+      <tr><td>Airport → hostel</td><td>Uber / Bolt</td><td>40–60 min</td><td class="num">$12–20</td><td>Use the app, not street taxis. Avoid arriving into the CBD at night.</td></tr>
+      <tr><td>Nairobi → Amboseli</td><td>Shared safari vehicle (part of the tour)</td><td>4–5 h</td><td class="num">in safari price</td><td>Join a group departure leaving Sat 21 Nov (see operators below).</td></tr>
+      <tr><td>Amboseli → Namanga → Arusha <span class="badge rec">Plan A</span></td><td>Safari vehicle drops at Namanga border; walk across the one-stop border post; Tanzanian pickup or shared taxi to Arusha</td><td>1.5–2 h + border + 2 h</td><td class="num">$0–100 drop fee + $10–60</td><td>No scheduled shuttle runs from Amboseli itself. Ask the Kenyan operator for a Namanga drop when booking, and ask the Tanzanian operator (Ngorongoro trip) to collect from Namanga. Many do this free or cheaply if you book with them.</td></tr>
+      <tr><td>Plan B: Amboseli → Nairobi → Arusha</td><td>Back to Nairobi with the group, then Riverside / Impala shuttle or Dar Express / Modern Coast coach next morning</td><td>+1 day; shuttle ~6 h</td><td class="num">~$36 shuttle + 1 night</td><td>Use this if no Namanga drop can be arranged. Costs a day but is very simple. Riverside lists fares from about $35.56.</td></tr>
+      <tr><td>Arusha ↔ Ngorongoro</td><td>Shared 4×4 safari vehicle</td><td>3 h each way</td><td class="num">in safari price</td><td>3-day joining group, Tue 24 – Thu 26 Nov.</td></tr>
+      <tr><td>Arusha → Moshi</td><td>Shared shuttle or coaster bus; or the day-hike operator's transfer</td><td>1.5–2 h</td><td class="num">$5–30</td><td>Day-hike operators often include pickup from Arusha.</td></tr>
+      <tr><td>Kilimanjaro (JRO) → Zanzibar (ZNZ)</td><td>Domestic flight: Precision Air, Air Tanzania. From Arusha (ARK): Coastal, Auric, Air Excel and others</td><td>~1–1.5 h</td><td class="num">$90–200</td><td>JRO is close to Chemka and Moshi and usually has more seats. Check baggage limits on small planes (often 15–20 kg, soft bags).</td></tr>
+      <tr><td>Around Zanzibar</td><td>Private transfer, shared minibus, or dala dala</td><td>ST→Paje ~1 h; Paje→Kendwa ~1.5 h</td><td class="num">$25–50 per transfer</td><td>Hostels can arrange shared transfers. Dala dalas are cheap but slow.</td></tr>
+      <tr><td>Zanzibar → Copenhagen</td><td>Flight, 1–2 stops</td><td>13–18 h</td><td class="num">in open-jaw</td><td>Sat 5 Dec. Leave 3 h before departure.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="groups">
+  <h2>Joining groups as a solo traveller</h2>
+  <p class="muted" style="max-width:75ch;margin-bottom:14px">Shared ("joining") safaris pool solo travellers into one vehicle, which matters most in Ngorongoro where the crater vehicle fee is split between passengers. When you write to operators, ask: <i>"Do you have a confirmed joining departure on [date], how many people are booked, and what is the price if it doesn't fill?"</i> Check recent reviews on SafariBookings and TripAdvisor before paying a deposit.</p>
+  <div class="grid2">
+    <div class="box"><h3>Kenya (Nairobi NP + Amboseli)</h3><ul>
+      <li><b>Wildebeest Eco Camp</b> (Langata): a backpacker base near Nairobi NP and the Giraffe Centre that runs its own shared safaris. Easiest way to meet other travellers.</li>
+      <li><b>Gracepatt Ecotours</b>: long-running budget operator known for joining safaris from Nairobi.</li>
+      <li><b>Bonfire Adventures</b>: Kenyan company with scheduled group trips, often with Kenyan travellers. Good for meeting locals rather than only backpackers.</li>
+      <li>Ask each one specifically about a <b>Namanga drop on day 2</b>.</li>
+    </ul></div>
+    <div class="box"><h3>Tanzania (Arusha)</h3><ul>
+      <li><b>Kilismile Trails & Safaris</b> (your link): day trips from Arusha, e.g. Materuni falls from $80, Chemka hot springs from $90. Ask if they pool solo travellers.</li>
+      <li><b>Kilipath African Safari</b>: listed on SafariBookings with shared tours (max 6 per vehicle) from Arusha.</li>
+      <li><b>SafariBookings.com</b>: filter tours by "shared" and "budget", start Arusha, 3 days. Compare at least 3 quotes.</li>
+      <li><b>Tanzania Cultural Tourism Programme</b>: community-run walks and bike tours (Mto wa Mbu, Ng'iresi, Lake Duluti). Fees go to village projects.</li>
+    </ul></div>
+    <div class="box"><h3>All-in-one alternative</h3><p>If Joan wants a group the whole way, overland companies (e.g. Absolute Africa, Intrepid, G Adventures) run Nairobi → Arusha → Zanzibar group trips of 10–20 days. Less freedom and more safari than he wants, but zero logistics. Check whether a departure fits 15 Nov.</p></div>
+  </div>
+</section>
+
+<section id="budget">
+  <h2>Budget</h2>
+  <p class="muted" style="max-width:75ch">Per person, in US dollars (safaris and park fees in East Africa are priced in USD). <b>Low</b> = dorms, budget camping safaris, few paid extras. <b>Mid</b> = mix of dorms and private hostel rooms, budget-lodge safari. <b>High</b> = private rooms and boutique stays, mid-range lodge safari. All figures are estimates; park fees and fuel costs change often.</p>
+  <div class="tot" id="totals"></div>
+  <div class="tablewrap"><table id="budgetTable">
+    <thead><tr><th>Item</th><th class="num">Low</th><th class="num">Mid</th><th class="num">High</th><th>Basis</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+  <p class="muted" style="margin-top:10px;font-size:13.5px">Ways to save: share the Amboseli and Ngorongoro vehicles, camp instead of lodges, fly ZNZ→CPH midweek, eat at local places (nyama choma, chips mayai, Forodhani street food), and use Bolt in Nairobi.</p>
+</section>
+
+<section id="safety">
+  <h2>Before he goes: entry, health, safety</h2>
+  <div class="grid2">
+    <div class="box"><h3>Entry paperwork</h3><ul class="check">
+      <li>Passport valid 6+ months after arrival, with blank pages.</li>
+      <li>Kenya eTA online at etakenya.go.ke, at least 2 weeks before (about $30–35).</li>
+      <li>Tanzania e-visa (about $50 single entry for most EU passports) or visa on arrival at Namanga. The e-visa avoids queues.</li>
+      <li><b>Yellow fever certificate.</b> Kenya is a yellow-fever-risk country, so Tanzania can ask for proof when he crosses from Kenya. Get vaccinated before the trip and carry the card.</li>
+      <li>Zanzibar's mandatory inbound insurance applies only if Zanzibar is the first port of entry. Joan enters Tanzania at Namanga, so it should not apply, but confirm before travel.</li>
+      <li>Travel insurance that covers safari, hiking to ~2,700 m, and medical evacuation.</li>
+    </ul></div>
+    <div class="box"><h3>Health</h3><ul>
+      <li>Malaria prophylaxis: needed for Amboseli, Northern Tanzania and Zanzibar. Nairobi itself is low-risk.</li>
+      <li>Travel clinic 6–8 weeks ahead: yellow fever, hepatitis A, typhoid, routine boosters.</li>
+      <li><b>Ebola:</b> UK advice (7 Oct 2026) notes an outbreak centred in the DRC and enhanced screening in Kenya, especially for arrivals from Uganda, Ethiopia and DRC. Not on his route, but expect temperature checks.</li>
+      <li>Never drink spirits of unknown origin. FCDO warns of methanol poisoning and drink spiking in bars.</li>
+    </ul></div>
+    <div class="box"><h3>Security, honestly</h3><ul>
+      <li><b>Nairobi:</b> mugging and bag-snatching are common, including by day, especially in the CBD. Use Bolt or Uber door to door at night, carry a spare phone or keep it out of sight, and stay away from protests.</li>
+      <li><b>Tanzania:</b> after the October 2025 election, protests and security crackdowns caused deaths. FCDO says more demonstrations are possible, often around public holidays. Avoid crowds, don't film police or protests, and don't post about politics while there. Internet has been cut before, so save key numbers offline.</li>
+      <li><b>Zanzibar:</b> armed robberies have occurred in Stone Town and on beaches. Avoid empty beaches after dark. Dress modestly away from the beach; fines can be $700+.</li>
+      <li><b>Roads:</b> avoid road travel after dark, and avoid boda-bodas.</li>
+    </ul></div>
+    <div class="box"><h3>Weather in Nov–Dec</h3><p>This is the short-rains season. Expect afternoon showers in Nairobi and Arusha, green landscapes and fewer crowds. Ngorongoro rim is cold at night (5–10 °C), so pack a fleece. Zanzibar is hot and humid with passing showers, getting drier into December. Kilimanjaro is often clearest from Amboseli at dawn.</p></div>
+  </div>
+  <div style="margin-top:14px">
+    <p class="note"><b>Kilimanjaro wildfires.</b> The UK Foreign Office updated its Tanzania advice on 6 Oct 2026: wildfires have closed the Rongai, Lemosho and Londorosi routes. The day hike in this plan uses the Marangu gate, which was not listed as closed, but check again in mid-November. Backup: Materuni waterfalls and a Chagga coffee walk.</p>
+    <p class="note"><b>Go / no-go a week before departure:</b> re-read the FCDO or Danish/Spanish foreign-ministry advice for Kenya and Tanzania; confirm the Namanga drop or switch to Plan B; confirm the safari group size in writing; confirm Marangu is open.</p>
+  </div>
+</section>
+
+<section id="ethics">
+  <h2>Travelling well</h2>
+  <div class="grid2">
+    <div class="box"><h3>Choose</h3><ul>
+      <li>Community-run cultural tourism walks (Mto wa Mbu, Lake Duluti) over "Maasai village" photo stops where the fee rarely reaches residents.</li>
+      <li>Local guides in Stone Town; the Old Slave Market memorial and Arusha Declaration Museum for history told from the region's side.</li>
+      <li>Women's co-operatives: Kazuri Beads (Nairobi), Seaweed Centre (Paje).</li>
+      <li>Tip safari guides and cooks directly ($10–20 per day each is common).</li>
+    </ul></div>
+    <div class="box"><h3>Skip</h3><ul>
+      <li>Slum "tours" in Kibera, unless run by a resident-led organisation he has checked.</li>
+      <li>Dolphin-chasing boats at Kizimkazi, and any trip that promises swimming with wild dolphins.</li>
+      <li>Buying safaris from street touts in Arusha or Nairobi.</li>
+      <li>Photographing people without asking.</li>
+    </ul></div>
+    <div class="box"><h3>How this compares with the 15-day package</h3><p>The Mara Enkopang 15-day trip has about 10 safari days (Amboseli, Naivasha, Masai Mara, Serengeti, Ngorongoro, Tarangire), crosses at Isebania and ends in an all-inclusive resort. This plan keeps Amboseli and Ngorongoro, cuts safari to 5 days, adds a full week of Nairobi, a Kilimanjaro hike and 7 independent nights on Zanzibar, and crosses at Namanga instead.</p></div>
+  </div>
+</section>
+
+<footer>
+  <p><b>What was checked (8 Oct 2026):</b> UK FCDO advice for Kenya (updated 7 Oct 2026) and Tanzania (updated 6 Oct 2026); Tanzania entry rules on Zanzibar insurance; Riverside Nairobi–Arusha fare from $35.56; Kilismile day-trip prices; the Mara Enkopang itinerary; a shared Arusha safari listing on SafariBookings. <b>To confirm before booking:</b> exact park fees (KWS and Ngorongoro change them often), flight prices, eTA and visa fees, hostel availability, and operator reviews. Hostel and operator names come from established backpacker routes and should be checked against recent reviews. The map is schematic, drawn for orientation rather than navigation.</p>
+</footer>
+</div>
+
+<script>
+// ---------- data ----------
+const C = { // [lon, lat]
+  cph:[37.6,1.6], nbo:[36.927,-1.319], nairobi:[36.80,-1.285], nnp:[36.86,-1.37], sheldrick:[36.775,-1.355], giraffe:[36.744,-1.376],
+  ngong:[36.64,-1.42], hells:[36.32,-0.91], naivasha:[36.40,-0.77], amboseli:[37.26,-2.65], namanga:[36.79,-2.545],
+  arusha:[36.68,-3.37], mtowambu:[35.86,-3.37], manyara:[35.80,-3.55], karatu:[35.67,-3.34], crater:[35.58,-3.18],
+  moshi:[37.34,-3.35], marangu:[37.52,-3.24], mandara:[37.53,-3.18], chemka:[37.20,-3.44], jro:[37.07,-3.43],
+  znz:[39.225,-6.222], stone:[39.19,-6.163], fumba:[39.29,-6.31], kwale:[39.33,-6.42], jozani:[39.41,-6.26], paje:[39.54,-6.265],
+  kendwa:[39.29,-5.755], mnemba:[39.385,-5.82], out:[40.3,-4.4]
+};
+const STOPS = [
+  {id:'nbo',name:'Jomo Kenyatta Airport',type:'flight',txt:'Arrival and final Kenyan exit point for flights. Uber/Bolt to the hostel.'},
+  {id:'nairobi',name:'Nairobi (base, 6 nights)',type:'night',txt:'Stay at Wildebeest Eco Camp (Langata, near the park) or Milimani Backpackers (Kilimani, closer to Westlands nightlife).'},
+  {id:'nnp',name:'Nairobi National Park',type:'safari',txt:'Half-day shared game drive at dawn. Lions and rhinos with skyscrapers behind them.'},
+  {id:'sheldrick',name:'Sheldrick Wildlife Trust',type:'trip',txt:'Orphaned elephant rescue and rehabilitation. Visiting hour 11:00–12:00, book online ahead.'},
+  {id:'giraffe',name:'Giraffe Centre (AFEW)',type:'trip',txt:'Rothschild giraffe breeding and conservation education. Pair it with Kazuri Beads, a women\'s co-operative nearby in Karen.'},
+  {id:'ngong',name:'Ngong Hills',type:'trip',txt:'Ridge hike over the seven knuckles, ~10–12 km. Go with a guide or ranger escort, early start.'},
+  {id:'hells',name:"Hell's Gate & Lake Naivasha",type:'trip',txt:'Cycle through the gorge on your own among zebra and giraffe, walk the gorge with a local guide, then the lake.'},
+  {id:'amboseli',name:'Amboseli National Park',type:'safari',txt:'2 days, 1 night. Elephant herds under Kilimanjaro. Dawn drive on day 2 for the clearest mountain views.'},
+  {id:'namanga',name:'Namanga border (one-stop post)',type:'road',txt:'Exit Kenya and enter Tanzania in one building. Have the e-visa, yellow fever card and USD cash ready. Ignore money-changer touts.'},
+  {id:'arusha',name:'Arusha (base)',type:'night',txt:'Arusha Backpackers (town centre) or Maasai Camp (social, bar, campsite). Arusha Declaration Museum for Nyerere and Ujamaa history.'},
+  {id:'manyara',name:'Lake Manyara NP',type:'safari',txt:'The lake stop: flamingos, hippos, forest baboons along the escarpment. Afternoon game drive on day 1 of the safari.'},
+  {id:'mtowambu',name:'Mto wa Mbu',type:'trip',txt:'Community-run cultural walk or bike tour through a village of over 100 ethnic groups. Fees fund local projects.'},
+  {id:'karatu',name:'Karatu',type:'night',txt:'Two nights at a budget lodge or campsite on the crater highlands. Cold at night.'},
+  {id:'crater',name:'Ngorongoro Crater',type:'safari',txt:'Full day on the crater floor, 600 m below the rim. Black rhino, lions, flamingos at Lake Magadi.'},
+  {id:'moshi',name:'Moshi',type:'night',txt:'One night at the foot of Kilimanjaro. Small, walkable, good coffee.'},
+  {id:'mandara',name:'Kilimanjaro day hike (Marangu → Mandara Hut)',type:'trip',txt:'Rainforest trail from Marangu gate (~1,860 m) to Mandara Hut (~2,720 m) and Maundi Crater. About 8 km each way, 5–7 h total. Park fee is the main cost.'},
+  {id:'chemka',name:'Chemka hot springs',type:'trip',txt:'Clear spring-fed pool among fig trees. Morning swim before the flight from JRO.'},
+  {id:'jro',name:'Kilimanjaro Airport (JRO)',type:'flight',txt:'Domestic flight to Zanzibar, about 1–1.5 h.'},
+  {id:'znz',name:'Zanzibar Airport (ZNZ)',type:'flight',txt:'Arrival on Zanzibar, and the departure point home on 5 Dec.'},
+  {id:'stone',name:'Stone Town (3 nights)',type:'night',txt:'Lost & Found Hostel or a guesthouse in the old town. Walking tour with a local guide, Old Slave Market memorial, Forodhani night food market, sunset dhow.'},
+  {id:'fumba',name:'Safari Blue (Menai Bay)',type:'boat',txt:'Full-day dhow sailing from Fumba: sandbank, snorkelling, seafood lunch, mangrove lagoon. Conservation area, community-employed crews.'},
+  {id:'jozani',name:'Jozani Forest',type:'trip',txt:'Zanzibar red colobus and mangrove boardwalk. Community-managed entry fee.'},
+  {id:'paje',name:'Paje / Jambiani (2 nights)',type:'night',txt:'Kite-surf beach and backpacker scene. Seaweed Centre co-operative. Nights out at Paje by Night or beach bars.'},
+  {id:'kendwa',name:'Kendwa / Nungwi (2 nights)',type:'night',txt:'Swimmable at all tides, sunset dhows, and the island\'s party beach (Kendwa Rocks).'},
+  {id:'mnemba',name:'Mnemba Atoll snorkel',type:'boat',txt:'Morning snorkel trip. Pick an operator that does not chase dolphins.'}
+];
+// legs: [day, mode, points...]
+const LEGS = [
+  {d:1, m:'flight', p:['cph','nbo'], label:'from Copenhagen', at:[37.25,-0.55]},
+  {d:1, m:'road', p:['nbo','nairobi']},
+  {d:2, m:'safari', p:['nairobi','nnp']},
+  {d:2, m:'trip', p:['nnp','sheldrick','giraffe','nairobi']},
+  {d:4, m:'trip', p:['nairobi',[36.55,-1.0],'hells','naivasha',[36.55,-1.05],'nairobi']},
+  {d:5, m:'trip', p:['nairobi','ngong']},
+  {d:7, m:'safari', p:['nairobi',[36.95,-1.45],[37.47,-2.08],[37.42,-2.55],'amboseli']},
+  {d:8, m:'road', p:['amboseli',[37.05,-2.62],'namanga',[36.70,-2.75],[36.70,-3.05],'arusha']},
+  {d:8, m:'alt', p:['amboseli',[37.42,-2.52],[37.47,-2.12],[36.98,-1.50],'nairobi',[36.78,-1.85],'namanga']},
+  {d:10, m:'safari', p:['arusha',[36.10,-3.55],'mtowambu','manyara','karatu']},
+  {d:11, m:'safari', p:['karatu',[35.56,-3.25],'crater',[35.66,-3.28],'karatu']},
+  {d:12, m:'safari', p:['karatu','mtowambu',[36.10,-3.57],'arusha']},
+  {d:13, m:'road', p:['arusha',[36.95,-3.40],'moshi']},
+  {d:13, m:'trip', p:['moshi','marangu','mandara']},
+  {d:14, m:'road', p:['moshi','chemka','jro']},
+  {d:14, m:'flight', p:['jro','znz']},
+  {d:14, m:'road', p:['znz','stone']},
+  {d:16, m:'boat', p:['stone','fumba','kwale','fumba']},
+  {d:17, m:'road', p:['stone','jozani','paje']},
+  {d:19, m:'road', p:['paje',[39.43,-6.05],[39.33,-5.85],'kendwa']},
+  {d:20, m:'boat', p:['kendwa',[39.32,-5.72],'mnemba']},
+  {d:21, m:'road', p:['kendwa',[39.25,-5.95],'znz']},
+  {d:21, m:'flight', p:['znz','out'], label:'to Copenhagen', at:[39.75,-4.55]}
+];
+const DAYS = [
+  {n:1,date:'15 Nov',wd:'Sun',ph:'Nairobi',t:'Land in Nairobi',x:'Arrive from Copenhagen, Bolt to the hostel, early night.',tags:['flight','night'],stops:['nbo','nairobi'],night:'Nairobi'},
+  {n:2,date:'16 Nov',wd:'Mon',ph:'Nairobi',t:'Nairobi National Park, elephants, giraffes',x:'Dawn shared game drive (6:00–11:00), Sheldrick elephant orphanage at 11:00, Giraffe Centre and Kazuri Beads in the afternoon.',tags:['safari','trip'],stops:['nnp','sheldrick','giraffe'],night:'Nairobi'},
+  {n:3,date:'17 Nov',wd:'Tue',ph:'Nairobi',t:'City day',x:'Morning run or walk in Karura Forest (saved by Wangari Maathai\'s Green Belt Movement), National Museum and Nairobi Gallery, GoDown Arts Centre. Rooftop sundowner in Westlands.',tags:['trip'],stops:['nairobi'],night:'Nairobi'},
+  {n:4,date:'18 Nov',wd:'Wed',ph:'Nairobi',t:"Hell's Gate cycling + Lake Naivasha",x:'Day trip, ~2 h each way. Bike the gorge among zebra, walk the gorge with a local guide, lake in the afternoon.',tags:['trip'],stops:['hells'],night:'Nairobi'},
+  {n:5,date:'19 Nov',wd:'Thu',ph:'Nairobi',t:'Ngong Hills hike',x:'Guided ridge walk with views to the Rift Valley. Evening live music in town.',tags:['trip'],stops:['ngong'],night:'Nairobi'},
+  {n:6,date:'20 Nov',wd:'Fri',ph:'Nairobi',t:'Slow day + night out',x:'Buffer for rain or rest, Maasai Market for crafts, pack for safari. Friday night out in Westlands (Alchemist, K1 Klub House). Bolt both ways.',tags:['night'],stops:['nairobi'],night:'Nairobi'},
+  {n:7,date:'21 Nov',wd:'Sat',ph:'Amboseli',t:'Amboseli safari, day 1',x:'Shared vehicle leaves Nairobi ~6:30, about 4–5 h. Afternoon game drive. Overnight in a camp at the park edge.',tags:['safari'],stops:['amboseli'],night:'Amboseli camp'},
+  {n:8,date:'22 Nov',wd:'Sun',ph:'Amboseli',t:'Dawn drive → Namanga → Arusha',x:'Sunrise drive under Kilimanjaro, then drop at Namanga, cross on foot, pickup to Arusha by late afternoon. Plan B: return to Nairobi with the group and take the shuttle on day 9.',tags:['safari','road','alt'],stops:['amboseli','namanga','arusha'],night:'Arusha'},
+  {n:9,date:'23 Nov',wd:'Mon',ph:'Arusha & Kilimanjaro',t:'Arusha slow day',x:'Rest after the border. Arusha Declaration Museum, central market, coffee. Optional canoe on Lake Duluti (community-run). Meet the safari operator for the briefing.',tags:['night'],stops:['arusha'],night:'Arusha'},
+  {n:10,date:'24 Nov',wd:'Tue',ph:'Arusha & Kilimanjaro',t:'Safari: Lake Manyara',x:'Drive west into the Rift Valley, afternoon game drive at Lake Manyara. Overnight in Karatu. Full moon tonight.',tags:['safari'],stops:['manyara','karatu'],night:'Karatu'},
+  {n:11,date:'25 Nov',wd:'Wed',ph:'Arusha & Kilimanjaro',t:'Safari: Ngorongoro Crater',x:'Down into the crater at first light, picnic lunch on the floor, back up by late afternoon.',tags:['safari'],stops:['crater'],night:'Karatu'},
+  {n:12,date:'26 Nov',wd:'Thu',ph:'Arusha & Kilimanjaro',t:'Mto wa Mbu walk → Arusha',x:'Morning community bike or walking tour in Mto wa Mbu, back to Arusha by afternoon. Thursday night at Via Via.',tags:['safari','trip'],stops:['mtowambu','arusha'],night:'Arusha'},
+  {n:13,date:'27 Nov',wd:'Fri',ph:'Arusha & Kilimanjaro',t:'Kilimanjaro day hike',x:'Early transfer to Marangu gate, hike to Mandara Hut and Maundi Crater, back down by mid-afternoon. Overnight in Moshi.',tags:['trip','road'],stops:['moshi','mandara'],night:'Moshi'},
+  {n:14,date:'28 Nov',wd:'Sat',ph:'Zanzibar',t:'Chemka springs → fly to Zanzibar',x:'Morning swim at Chemka hot springs (or Materuni waterfalls), afternoon flight JRO → ZNZ, sunset in Stone Town.',tags:['trip','flight'],stops:['chemka','jro','znz','stone'],night:'Stone Town'},
+  {n:15,date:'29 Nov',wd:'Sun',ph:'Zanzibar',t:'Stone Town',x:'Walking tour with a local guide, Old Slave Market memorial at the Anglican cathedral, Forodhani food market, sunset dhow from the beach in front of the Old Fort.',tags:['boat','trip'],stops:['stone'],night:'Stone Town'},
+  {n:16,date:'30 Nov',wd:'Mon',ph:'Zanzibar',t:'Safari Blue dhow day',x:'Full day sailing Menai Bay from Fumba: sandbank, snorkelling, seafood lunch on Kwale Island, mangrove lagoon.',tags:['boat'],stops:['fumba'],night:'Stone Town'},
+  {n:17,date:'1 Dec',wd:'Tue',ph:'Zanzibar',t:'Spice farm, Jozani → Paje',x:'Morning spice farm, Jozani Forest for red colobus, on to Paje on the east coast.',tags:['trip','road'],stops:['jozani','paje'],night:'Paje'},
+  {n:18,date:'2 Dec',wd:'Wed',ph:'Zanzibar',t:'Paje beach day',x:'Kite-surf taster lesson or swim at high tide, Seaweed Centre co-operative, sunset yoga. Beach bars at night.',tags:['night'],stops:['paje'],night:'Paje'},
+  {n:19,date:'3 Dec',wd:'Thu',ph:'Zanzibar',t:'North to Kendwa',x:'Transfer (~1.5 h), afternoon swim, sunset dhow cruise off Nungwi.',tags:['road','boat'],stops:['kendwa'],night:'Kendwa'},
+  {n:20,date:'4 Dec',wd:'Fri',ph:'Zanzibar',t:'Mnemba snorkel + last party',x:'Morning snorkel at Mnemba Atoll, lazy afternoon, last night out at Kendwa.',tags:['boat','night'],stops:['mnemba','kendwa'],night:'Kendwa'},
+  {n:21,date:'5 Dec',wd:'Sat',ph:'Zanzibar',t:'Fly home',x:'Transfer to ZNZ (~1 h), flight to Copenhagen.',tags:['road','flight'],stops:['znz'],night:'—'}
+];
+const PH_NOTE = {'Nairobi':'6 nights','Amboseli':'1 night · safari days 1–2','Arusha & Kilimanjaro':'6 nights · safari days 3–5','Zanzibar':'7 nights'};
+const TAGNAME = {safari:'safari',trip:'day trip',road:'road',flight:'flight',boat:'boat',night:'city / beach',alt:'plan B'};
+
+// geography (schematic): coastline east edge, land polygon closes off-frame
+const LAND = [[30,1.5],[41.5,1.5],[41.55,-1.65],[41.3,-1.95],[40.9,-2.27],[40.55,-2.45],[40.22,-2.75],[40.12,-3.22],[39.95,-3.45],[39.85,-3.63],[39.75,-3.88],[39.67,-4.05],[39.58,-4.32],[39.47,-4.55],[39.30,-4.64],[39.22,-4.66],[39.10,-5.07],[38.98,-5.43],[38.88,-5.75],[38.78,-6.05],[38.88,-6.40],[39.05,-6.62],[39.29,-6.82],[39.45,-7.05],[39.50,-7.40],[39.30,-7.80],[39.40,-8.6],[30,-8.6]];
+const UNGUJA = [[39.285,-5.715],[39.33,-5.76],[39.37,-5.83],[39.38,-5.90],[39.42,-5.98],[39.45,-6.05],[39.44,-6.12],[39.48,-6.14],[39.52,-6.18],[39.54,-6.25],[39.555,-6.33],[39.56,-6.42],[39.52,-6.47],[39.47,-6.46],[39.44,-6.40],[39.39,-6.33],[39.32,-6.34],[39.27,-6.32],[39.25,-6.27],[39.20,-6.22],[39.18,-6.16],[39.21,-6.08],[39.20,-5.98],[39.23,-5.88],[39.26,-5.79]];
+const PEMBA = [[39.68,-4.88],[39.80,-4.95],[39.86,-5.20],[39.80,-5.45],[39.68,-5.42],[39.64,-5.15]];
+const BORDER = [[33.92,-1.0],[37.62,-2.98],[37.74,-3.20],[37.70,-3.33],[37.78,-3.52],[37.80,-3.62],[39.22,-4.66]];
+const LAKES = [ // [lon,lat,rx,ry,deg]
+  [36.35,-0.77,0.08,0.07,0],[35.83,-3.58,0.06,0.20,-20],[36.03,-2.35,0.06,0.20,10],[36.26,-1.90,0.03,0.08,0],[35.30,-3.62,0.22,0.06,-25],[37.78,-3.58,0.015,0.05,0],[35.60,-3.19,0.03,0.025,0]];
+const PARKS = [[37.25,-2.66,0.13,0.09,'Amboseli NP'],[35.55,-3.10,0.38,0.28,''],[36.86,-1.37,0.06,0.05,''],[35.85,-3.60,0.08,0.20,'']];
+const PEAKS = [[37.355,-3.067,'Kilimanjaro 5,895 m'],[36.75,-3.25,'Meru 4,566 m']];
+const VIEWS = {all:[34.9,-0.3,40.3,-6.65], nbo:[36.2,-0.65,37.15,-1.6], ntz:[35.35,-2.45,37.85,-3.75], znz:[38.95,-5.62,39.75,-6.55]};
+
+// ---------- map rendering ----------
+const svg = document.getElementById('map'); const NS='http://www.w3.org/2000/svg';
+const W=600,H=600; let view=VIEWS.all.slice(), curName='all', selDay=null, selStop=null;
+function P(ll){const [a,b,c,d]=view; const sx=W/(c-a), sy=H/(b-d); const s=Math.min(sx,sy);
+  const ox=(W-(c-a)*s)/2, oy=(H-(b-d)*s)/2; return [ox+(ll[0]-a)*s, oy+(b-ll[1])*s];}
+function scale(){const [a,b,c,d]=view; return Math.min(W/(c-a),H/(b-d));}
+const pt = k => Array.isArray(k)?k:C[k];
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);(parent||svg).appendChild(e);return e;}
+function poly(arr){return arr.map((p,i)=>(i?'L':'M')+P(p).map(v=>v.toFixed(1)).join(',')).join('')+'Z';}
+function line(arr){return arr.map((p,i)=>(i?'L':'M')+P(pt(p)).map(v=>v.toFixed(1)).join(',')).join('');}
+function ell(lon,lat,rx,ry,deg){const pts=[];const r=deg*Math.PI/180;for(let i=0;i<24;i++){const t=i/24*2*Math.PI;const x=rx*Math.cos(t),y=ry*Math.sin(t);pts.push([lon+x*Math.cos(r)-y*Math.sin(r),lat+x*Math.sin(r)+y*Math.cos(r)]);}return pts;}
+const MODE = {flight:{c:'--flight',w:2.2,dash:'7 6'},road:{c:'--road',w:2.4},safari:{c:'--safari',w:3.2},trip:{c:'--trip',w:2,dash:'2 5'},boat:{c:'--boat',w:2.6},alt:{c:'--alt',w:2,dash:'6 5'}};
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+
+function draw(){
+  svg.innerHTML='';
+  const defs=el('defs',{});
+  for(const m in MODE){const mk=el('marker',{id:'ar-'+m,viewBox:'0 0 10 10',refX:'7',refY:'5',markerWidth:'5',markerHeight:'5',orient:'auto-start-reverse'},defs);el('path',{d:'M0,0L10,5L0,10z',fill:css(MODE[m].c)},mk);}
+  el('rect',{x:0,y:0,width:W,height:H,fill:css('--sea')});
+  el('path',{d:poly(LAND),fill:css('--land'),stroke:css('--land-edge'),'stroke-width':1});
+  el('path',{d:poly(UNGUJA),fill:css('--land'),stroke:css('--land-edge'),'stroke-width':1});
+  el('path',{d:poly(PEMBA),fill:css('--land'),stroke:css('--land-edge'),'stroke-width':1});
+  const s=scale(), z=s/100;
+  PARKS.forEach(p=>{el('path',{d:poly(ell(p[0],p[1],p[2],p[3],0)),fill:css('--park'),stroke:'none'});});
+  LAKES.forEach(l=>el('path',{d:poly(ell(...l)),fill:css('--lake')}));
+  el('path',{d:line(BORDER),fill:'none',stroke:css('--muted'),'stroke-width':1.2,'stroke-dasharray':'5 3 1 3'});
+  const lbl=(ll,txt,cls,dx=0,dy=0,anchor='start')=>{const [x,y]=P(ll);const t=el('text',{x:x+dx,y:y+dy,class:cls,'text-anchor':anchor});t.textContent=txt;return t;};
+  if(curName==='all'||z<1.6){lbl([37.9,-1.05],'KENYA','country');lbl([35.4,-5.0],'TANZANIA','country');lbl([39.75,-5.95],'Indian Ocean','ocean');}
+  PEAKS.forEach(p=>{const [x,y]=P([p[0],p[1]]);el('path',{d:`M${x-7},${y+6}L${x},${y-7}L${x+7},${y+6}Z`,fill:css('--muted')});if(z>1.3||p[2].startsWith('Kili'))lbl([p[0],p[1]],p[2],'lbl',9,4);});
+  // legs
+  const g=el('g',{});
+  LEGS.forEach((L,i)=>{const M=MODE[L.m];const a={d:line(L.p),class:'leg','data-day':L.d,stroke:css(M.c),'stroke-width':M.w*Math.min(1.6,Math.max(1,z*.6)),'marker-end':`url(#ar-${L.m})`};if(M.dash)a['stroke-dasharray']=M.dash;
+    if(selDay!==null && L.d!==selDay) a.class+=' dim';
+    el('path',a,g);
+    if(L.label){const q=P(L.at);const t=el('text',{x:q[0]+6,y:q[1]+14,class:'lbl sea','font-size':11});t.textContent=L.label;}
+  });
+  // stops
+  const shown = curName==='all' ? new Set(['nairobi','amboseli','namanga','arusha','crater','moshi','stone','paje','kendwa','hells']) : null;
+  STOPS.forEach(S=>{const ll=C[S.id];const [x,y]=P(ll); if(x<-10||x>W+10||y<-10||y>H+10)return;
+    const gg=el('g',{class:'stop'+(selStop===S.id?' on':''),tabindex:0,role:'button','aria-label':S.name});
+    const col={safari:'--safari',trip:'--trip',night:'--ink',flight:'--flight',boat:'--boat',road:'--road'}[S.type];
+    const r = S.type==='night'?6.5:5;
+    el('circle',{class:'dot',cx:x,cy:y,r:r,fill:css(col)},gg);
+    if(!shown||shown.has(S.id)){const nm=S.name.replace(/ \(.+\)/,'');const left=(curName==='all'&&S.id==='arusha')||['nbo','jro','namanga','giraffe','ngong','stone','fumba','kendwa','manyara','karatu','crater','sheldrick','hells'].includes(S.id)&&!(view===VIEWS.all&&['manyara','crater'].includes(S.id)&&false);
+      const t=el('text',{x:left?x-9:x+9,y:y+4,class:'lbl'+(['fumba','mnemba','znz','stone','kendwa'].includes(S.id)&&curName!=='znz'?' sea':''),'text-anchor':left?'end':'start'},gg);t.textContent=nm;}
+    const pick=()=>showStop(S.id);gg.addEventListener('click',pick);gg.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick();}});
+  });
+  if(mover){const [x,y]=P(mover);el('circle',{cx:x,cy:y,r:8,fill:css('--accent'),stroke:css('--panel'),'stroke-width':3});}
+}
+let mover=null;
+
+// view animation
+function goView(name){const to=VIEWS[name], from=view.slice(); curName=name; document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===name));
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches; const t0=performance.now(), dur=reduce?0:550;
+  function step(t){const k=dur?Math.min(1,(t-t0)/dur):1;const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;view=from.map((v,i)=>v+(to[i]-v)*e);if(k>=1)view=to;draw();if(k<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);}
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>goView(b.dataset.view)));
+
+// info
+const info={d:document.getElementById('infoDay'),t:document.getElementById('infoTitle'),x:document.getElementById('infoText')};
+function showStop(id){selStop=id;const S=STOPS.find(s=>s.id===id);const ds=DAYS.filter(d=>d.stops.includes(id)).map(d=>'Day '+d.n);info.d.textContent=ds.length?ds.join(' · '):'';info.t.textContent=S.name;info.x.textContent=S.txt;draw();}
+function viewForDay(n){if(n<=6)return 'nbo';if(n<=8)return 'all';if(n<=13)return 'ntz';if(n===14)return 'all';return n===21?'all':'znz';}
+function showDay(n,{move=true}={}){selDay=n;const D=DAYS[n-1];selStop=D.stops[D.stops.length-1];info.d.textContent=`Day ${n} · ${D.wd} ${D.date} · night: ${D.night}`;info.t.textContent=D.t;info.x.textContent=D.x;
+  document.querySelectorAll('.day').forEach(b=>b.classList.toggle('on',+b.dataset.n===n));
+  if(move){const v=viewForDay(n);if(curName!==v)goView(v);else draw();}else draw();}
+
+// ledger
+const ledger=document.getElementById('ledger');let lastPh='';
+DAYS.forEach(D=>{if(D.ph!==lastPh){const h=document.createElement('div');h.className='phase';h.innerHTML=`<span>${D.ph}</span><span>${PH_NOTE[D.ph]}</span>`;ledger.appendChild(h);lastPh=D.ph;}
+  const b=document.createElement('button');b.className='day';b.dataset.n=D.n;b.type='button';
+  b.innerHTML=`<span class="date"><b>${D.date.split(' ')[0]}</b>${D.date.split(' ')[1]} · ${D.wd}<br>Day ${D.n}</span><span><h3>${D.t}</h3><p>${D.x}</p><span class="tags">${D.tags.map(t=>`<span class="tag t-${t}">${TAGNAME[t]}</span>`).join('')}</span></span>`;
+  b.addEventListener('click',()=>{stopPlay();showDay(D.n);if(matchMedia('(max-width:900px)').matches)document.querySelector('.mapcard').scrollIntoView({behavior:'smooth',block:'start'});});ledger.appendChild(b);});
+
+// play journey: walk a marker along all legs in order (skip plan B)
+let playing=null;
+function legPoints(){const seq=[];LEGS.filter(L=>L.m!=='alt').forEach(L=>{L.p.forEach(k=>seq.push({ll:pt(k),d:L.d}));});return seq;}
+function stopPlay(){if(playing){cancelAnimationFrame(playing.raf);playing=null;mover=null;document.getElementById('play').textContent='▶ Play journey';draw();}}
+document.getElementById('play').addEventListener('click',()=>{
+  if(playing){stopPlay();return;}
+  document.getElementById('play').textContent='■ Stop';
+  view=VIEWS.all.slice();curName='all';document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view==='all'));
+  const seq=legPoints();let i=0,k=0,lastDay=0;const speed=0.045;
+  function tick(){const a=seq[i].ll,b=seq[i+1].ll;const dist=Math.hypot(b[0]-a[0],b[1]-a[1]);k+=dist?speed/Math.max(dist,.04):1;
+    if(k>=1){k=0;i++;if(i>=seq.length-1){mover=seq[seq.length-1].ll;draw();playing.raf=0;setTimeout(stopPlay,900);return;}}
+    const A=seq[i].ll,B=seq[i+1].ll;mover=[A[0]+(B[0]-A[0])*k,A[1]+(B[1]-A[1])*k];
+    const d=seq[i+1].d;if(d!==lastDay){lastDay=d;showDay(d,{move:false});}else draw();
+    playing.raf=requestAnimationFrame(tick);}
+  playing={raf:requestAnimationFrame(tick)};
+});
+
+// redraw on theme change
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);
+new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+draw();
+
+// ---------- budget ----------
+const B=[
+  ['Flights CPH → NBO, ZNZ → CPH (open-jaw)',650,850,1200,'1 stop each way, booked 4–6 weeks ahead'],
+  ['Kenya eTA + Tanzania visa',85,85,85,'≈$35 + $50'],
+  ['Travel insurance (3 weeks, incl. evacuation)',60,100,160,''],
+  ['Vaccines + malaria tablets',50,120,200,'Depends on what Joan already has'],
+  ['Nairobi beds, 6 nights',90,240,540,'$15 dorm / $40 private hostel room / $90 boutique'],
+  ['Nairobi activities',300,400,580,'Park drive + fee, Sheldrick, Giraffe Centre, Hell\'s Gate trip, Ngong guide, museums'],
+  ['Amboseli 2 days shared safari + Namanga drop',380,500,800,'Budget camp → mid-range lodge; incl. park fees and meals'],
+  ['Namanga → Arusha',10,50,80,'Shared taxi → arranged pickup'],
+  ['Arusha + Moshi beds, 4 nights',60,160,360,'$15 / $40 / $90'],
+  ['Lake Manyara + Ngorongoro, 3 days shared',650,900,1300,'Camping → budget lodge → mid-range lodge; incl. crater fees and meals'],
+  ['Kilimanjaro day hike + Chemka',190,270,360,'Marangu park fee is most of the hike cost'],
+  ['Flight JRO → ZNZ',90,140,200,''],
+  ['Zanzibar beds, 7 nights',126,315,770,'$18 / $45 / $110'],
+  ['Zanzibar activities',140,210,350,'Safari Blue, sunset dhow, Stone Town guide, Jozani, Mnemba; high adds kite lessons'],
+  ['Local transport (Bolt, transfers, airport runs)',120,180,300,''],
+  ['Food & drink, 16 non-safari days',320,480,800,'$20 / $30 / $50 per day'],
+  ['Nights out',80,150,300,''],
+  ['Tips (guides, cooks, crews)',80,120,180,'Safari guide + cook ≈ $15–25 per day total'],
+  ['SIM / eSIM data (Safaricom + Vodacom/Airtel)',20,30,40,'']
+];
+const tb=document.querySelector('#budgetTable tbody');const sum=[0,0,0];const f=n=>'$'+Math.round(n).toLocaleString('en-US');
+B.forEach(r=>{for(let i=0;i<3;i++)sum[i]+=r[i+1];const tr=document.createElement('tr');tr.innerHTML=`<td>${r[0]}</td><td class="num">${f(r[1])}</td><td class="num">${f(r[2])}</td><td class="num">${f(r[3])}</td><td class="muted">${r[4]}</td>`;tb.appendChild(tr);});
+const cont=sum.map(s=>s*0.1);
+tb.insertAdjacentHTML('beforeend',`<tr class="sub"><td>Subtotal</td>${sum.map(s=>`<td class="num">${f(s)}</td>`).join('')}<td></td></tr><tr class="sub"><td>Contingency 10%</td>${cont.map(s=>`<td class="num">${f(s)}</td>`).join('')}<td class="muted">Price rises, a lost day, a cancelled flight</td></tr><tr class="total"><td>Total per person</td>${sum.map((s,i)=>`<td class="num">${f(s+cont[i])}</td>`).join('')}<td>≈ ${sum.map((s,i)=>f((s+cont[i])/21)).join(' / ')} per day</td></tr>`);
+document.getElementById('totals').innerHTML=['Low','Mid','High'].map((n,i)=>`<div><span>${n}</span><b>${f(sum[i]+cont[i])}</b><span>of which flights ${f(B[0][i+1])}</span></div>`).join('');
+</script>
+
+</body></html>
